@@ -1,18 +1,19 @@
+# Tested target for the demo apps: Python 3.10-3.13.
+# Python 3.14 may be ahead of binary wheels for some ML packages.
+
 # UI
-gradio>=3.30.0
-streamlit>=1.24.0
+streamlit>=1.58.0,<2
+gradio>=6.18.0,<7
+gradio-client>=2.5.0,<3
 
 # Data
-numpy>=1.23.0
-pandas>=1.5.0
-torch>=2.0.0
-datasets>=2.13.0
+numpy>=2.4.6,<3
+pandas>=3.0.3,<4
 
-# Hugging Face
-transformers>=4.31.0
-huggingface_hub>=0.14.0
+# Hugging Face inference
+torch>=2.12.0,<3
+transformers>=5.12.0,<6
+huggingface-hub>=1.19.0,<2
 
-# Additional
-scikit-learn>=1.2.0
-matplotlib>=3.7.0
-python-dotenv>=1.0.0
+# Secrets for deploy/auth demos
+python-dotenv>=1.2.2,<2

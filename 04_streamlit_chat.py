@@ -1,15 +1,32 @@
 import streamlit as st
 
-if "hits" not in st.session_state:
-    st.session_state.hits = 0
-st.session_state.hits += 1
-st.write("Page views:", st.session_state.hits)
+st.set_page_config(page_title="Streamlit Chat")
+st.title("Streamlit Chat Demo")
 
-# Simple echo chat
-for m in st.session_state.get("dialog", []):
-    st.chat_message(m["role"]).write(m["text"])
+if "runs" not in st.session_state:
+    st.session_state.runs = 0
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Send a message and I will reverse it."}
+    ]
 
-if q := st.chat_input("Say something"):
-    st.session_state.dialog = st.session_state.get("dialog", [])
-    st.session_state.dialog.append({"role": "user", "text": q})
-    st.chat_message("assistant").write(q[::-1])
+st.session_state.runs += 1
+
+with st.sidebar:
+    st.metric("Script reruns", st.session_state.runs)
+    if st.button("Clear chat"):
+        st.session_state.messages = [
+            {"role": "assistant", "content": "Chat cleared. Send a new message."}
+        ]
+        st.rerun()
+
+for message in st.session_state.messages:
+    st.chat_message(message["role"]).write(message["content"])
+
+if prompt := st.chat_input("Say something"):
+    response = prompt[::-1]
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.messages.append({"role": "assistant", "content": response})
+
+    st.chat_message("user").write(prompt)
+    st.chat_message("assistant").write(response)

@@ -1,26 +1,30 @@
+import os
+
 import gradio as gr
 
 
+def env_flag(name: str, default: str = "false") -> bool:
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
 def greet(name: str) -> str:
-    return f"Hello, {name}!"
+    clean_name = name.strip() or "there"
+    return f"Hello, {clean_name}! Your Gradio demo is running."
 
-
-# Interactive interface
-#   • fn: callable executed on submit
-#   • inputs / outputs: simple text widgets
-#   • title / description: shown above the UI
 
 demo = gr.Interface(
-    fn=greet,  # Python function to invoke
-    inputs="text",  # single text input
-    outputs="text",  # single text output
+    fn=greet,
+    inputs=gr.Textbox(label="Name", placeholder="Ada"),
+    outputs=gr.Textbox(label="Greeting"),
     title="Gradio Hello Demo",
     description="Enter your name to receive a greeting.",
+    examples=["Ada", "Harbour.Space"],
+    api_name="greet",
 )
 
 
 if __name__ == "__main__":
     demo.launch(
-        share=True,
-        inbrowser=True,  # create public tunnel instantly
-    )  # open a new browser tab automatically
+        inbrowser=True,
+        share=env_flag("GRADIO_SHARE"),
+    )

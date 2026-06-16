@@ -1,4 +1,14 @@
+import os
+
 import gradio as gr
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+def env_flag(name: str, default: str = "false") -> bool:
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
 def reverse(text: str) -> str:
@@ -6,19 +16,23 @@ def reverse(text: str) -> str:
     return text[::-1]
 
 
-# Interface definition: single text input/output bound to `reverse`
 demo = gr.Interface(
-    fn=reverse,  # callable executed when user submits
-    inputs="text",
-    outputs="text",
-    title="Password‑Protected Reverse",
+    fn=reverse,
+    inputs=gr.Textbox(label="Text", placeholder="Try a private demo"),
+    outputs=gr.Textbox(label="Reversed"),
+    title="Password-Protected Reverse",
+    description="Credentials come from DEMO_USER and DEMO_PASSWORD.",
+    api_name="reverse",
 )
 
 
 if __name__ == "__main__":
-    # Launch with basic authentication
-    app, _, url = demo.launch(
-        auth=("admin", "pass1234"),  # username / password combo
-        share=True,  # expose a public URL via ngrok
-        inline=False,  # open in a separate tab
+    username = os.getenv("DEMO_USER", "admin")
+    password = os.getenv("DEMO_PASSWORD", "demo-password-change-me")
+
+    demo.launch(
+        auth=(username, password),
+        inbrowser=True,
+        share=env_flag("GRADIO_SHARE"),
+        theme=gr.themes.Soft(),
     )

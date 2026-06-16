@@ -1,25 +1,21 @@
 import numpy as np
 import streamlit as st
 
-# --------------------------- UI Header ---------------------------
-# The main title at the top of the page
+st.set_page_config(page_title="Streamlit Hello")
+
+if "run_count" not in st.session_state:
+    st.session_state.run_count = 0
+st.session_state.run_count += 1
+
 st.title("Streamlit Hello Demo")
+st.caption("Every widget interaction reruns this script from top to bottom.")
 
-# ----------------------- User Instructions -----------------------
-# Short description explaining what the slider does
-st.write(
-    "Move the slider — the script re‑runs automatically "
-    "and computes the square of the selected number."
-)
+value = st.slider("Number", min_value=0, max_value=100, value=25, step=1)
+random_value = int(np.random.default_rng().integers(0, 1000))
 
-# -------------------------- Slider -------------------------------
-# Slider widget returning an int in the range 0–100
-value = st.slider("Number (0–100)", 0, 100, 25)
+left, middle, right = st.columns(3)
+left.metric("Selected", value)
+middle.metric("Square", value**2)
+right.metric("Run", st.session_state.run_count)
 
-# ----------------------- Computation -----------------------------
-# Display the square of the chosen value
-st.write(f"Square: {value**2}")
-
-# -------------------- Demonstrate Rerun --------------------------
-# Show a random number on each run to emphasize reruns
-st.write(f"Random number for this run: {np.random.randint(0, 1000)}")
+st.info(f"Random sample for this run: {random_value}")

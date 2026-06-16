@@ -1,30 +1,31 @@
 import asyncio
+import os
 
 from gradio_client import Client
 
-# Endpoint exposed by `demo.launch(share=True)`
-URL = "https://f54b4cbf25d9dddb93.gradio.live"  # replace with your own tunnel URL
-client = Client(URL)
-
-# 1️⃣ List all available REST endpoints for the app
-print(client.view_api())  # shows routes and their input/output signatures
-
-# 2️⃣ Synchronous call
-resp = client.predict(
-    "You are a fool!",  # first positional argument to the endpoint
-    api_name="/predict",  # omit if the app exposes a single endpoint
-)
-print(resp)  # e.g. {'toxic': 0.97, 'insult': 0.88, ...}
+URL = os.getenv("GRADIO_URL", "http://127.0.0.1:7860")
+API_NAME = os.getenv("GRADIO_API_NAME", "/predict")
+SYNC_TEXT = os.getenv("GRADIO_SYNC_TEXT", "This comment is rude and unfair.")
+ASYNC_TEXT = os.getenv("GRADIO_ASYNC_TEXT", "Thanks for the clear explanation.")
 
 
-# 3️⃣ Asynchronous call
-async def run_async() -> None:
-    # Fire‑and‑forget submission; returns a Job object immediately
-    job = client.submit("I'll beat you!", api_name="/predict")
+def build_client() -> Client:
+    return Client(URL)
 
-    # Wait for result in a background thread so the event loop stays free
+
+async def run_async(client: Client) -> None:
+    job = client.submit(ASYNC_TEXT, api_name=API_NAME)
     result = await asyncio.to_thread(job.result)
-    print(result)
+    print("Async response:", result)
 
 
-asyncio.run(run_async())
+if __name__ == "__main__":
+    client = build_client()
+
+    print(f"Connected to: {URL}")
+    print(client.view_api())
+
+    response = client.predict(SYNC_TEXT, api_name=API_NAME)
+    print("Sync response:", response)
+
+    asyncio.run(run_async(client))
