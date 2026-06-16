@@ -1,4 +1,4 @@
-# Harbour Space Session 8
+# Harbour Space Session 7
 
 Presentation and code examples for a Production ML lesson about fast UI MVPs with
 Streamlit and Gradio.
